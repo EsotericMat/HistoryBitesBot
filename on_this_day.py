@@ -2,9 +2,14 @@ import wikipedia
 import re
 from datetime import datetime
 
-def extract_events_and_births():
+
+def get_events():
     today_string = datetime.now().strftime("%B %d")
     text = wikipedia.page(today_string).content
+    return text
+
+
+def extract_events_and_births(text):
     # Define regex patterns to capture events and births by their respective section headers
     events_pattern = r'==\s*Events\s*==.*?(?==\s*(Births|Deaths)\s*==)'
     births_pattern = r'==\s*Births\s*==.*?(?==\s*(Events|Deaths)\s*==)'
