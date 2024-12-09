@@ -45,9 +45,8 @@ async def send_fact(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(f"{SYMBOLS[user_choice]} {fact}")
 
 
-def bot_pull():
+def main():
     bot = ApplicationBuilder().token(os.environ["TELEGRAM_TOKEN"]).build()
-
     # Add handlers
     bot.add_handler(CommandHandler("start", start))
     bot.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_fact))
@@ -57,7 +56,5 @@ def bot_pull():
 
 
 if __name__ == "__main__":
-    threading.Thread(target=bot_pull).start()
-    app.run(host='0.0.0.0',
-            port=5000)
+    main()
 
