@@ -10,9 +10,10 @@ from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, Application
 
 app = Flask(__name__)
-# token = os.environ["TELEGRAM_TOKEN"]
-token = "7608536516:AAFX2aQh18Qj9W1q8bUyCwa3I687qLQX5Qs"
+token = os.environ["TELEGRAM_TOKEN"]
+# token = "7608536516:AAFX2aQh18Qj9W1q8bUyCwa3I687qLQX5Qs"
 bot = ApplicationBuilder().token(token).build()
+
 
 # Start command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -48,7 +49,7 @@ async def send_fact(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 @app.route(f'/webhook/{token}', methods=['POST'])
 def webhook():
-    update = Update.de_json(request.get_json(force=True))
+    update = Update.de_json(request.get_json(force=True), bot=bot.bot)
     bot.process_update(update)
     return 'ok', 200
 
