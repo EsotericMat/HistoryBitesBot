@@ -1,17 +1,18 @@
 import os
 import random
 import threading
-from flask import Flask
+
+import requests
+from flask import Flask, request
 from facts import FACTS, SYMBOLS
 from on_this_day import extract_events_and_births, get_events
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, Application
 
 app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return 'botIsUp'
+# token = os.environ["TELEGRAM_TOKEN"]
+token = "7608536516:AAFX2aQh18Qj9W1q8bUyCwa3I687qLQX5Qs"
+bot = ApplicationBuilder().token(token).build()
 
 # Start command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -45,16 +46,14 @@ async def send_fact(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(f"{SYMBOLS[user_choice]} {fact}")
 
 
-def main():
-    bot = ApplicationBuilder().token(os.environ["TELEGRAM_TOKEN"]).build()
-    # Add handlers
-    bot.add_handler(CommandHandler("start", start))
-    bot.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_fact))
-
-    print("Bot is running...")
-    bot.run_polling()
+@app.route(f'/webhook/{token}', methods=['POST'])
+def webhook():
+    update = Update.de_json(request.get_json(force=True))
+    bot.process_update(update)
+    return 'ok', 200
 
 
 if __name__ == "__main__":
-    main()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
 
