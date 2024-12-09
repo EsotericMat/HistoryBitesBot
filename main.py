@@ -10,10 +10,8 @@ from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, Application
 
 app = Flask(__name__)
-token = os.environ["TELEGRAM_TOKEN"]
-# token = "7608536516:AAFX2aQh18Qj9W1q8bUyCwa3I687qLQX5Qs"
-bot = ApplicationBuilder().token(token).build()
-
+# token = os.environ["TELEGRAM_TOKEN"]
+token = "7608536516:AAFX2aQh18Qj9W1q8bUyCwa3I687qLQX5Qs"
 
 # Start command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -47,14 +45,13 @@ async def send_fact(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(f"{SYMBOLS[user_choice]} {fact}")
 
 
-@app.route(f'/webhook/{token}', methods=['POST'])
-def webhook():
-    update = Update.de_json(request.get_json(force=True), bot=bot.bot)
-    bot.process_update(update)
-    return 'ok', 200
+def main():
+    application = Application.builder().token(token).build()
+    print('BotIsUp')
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_fact))
+    application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
-if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
-
+if __name__ == '__main__':
+    main()
