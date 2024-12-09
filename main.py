@@ -1,11 +1,17 @@
 import os
 import random
-import json
+import threading
+from flask import Flask
 from facts import FACTS, SYMBOLS
 from on_this_day import extract_events_and_births, get_events
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, Application
 
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return 'botIsUp'
 
 # Start command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -38,16 +44,20 @@ async def send_fact(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         fact = random.choice(FACTS[user_choice])
         await update.message.reply_text(f"{SYMBOLS[user_choice]} {fact}")
 
-if __name__ == "__main__":
-    import os
-    from telegram.ext import ApplicationBuilder
 
-    # Build the bot application
-    app = ApplicationBuilder().token(os.environ["TELEGRAM_TOKEN"]).build()
+def bot_pull():
+    bot = ApplicationBuilder().token(os.environ["TELEGRAM_TOKEN"]).build()
 
     # Add handlers
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_fact))
+    bot.add_handler(CommandHandler("start", start))
+    bot.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_fact))
 
     print("Bot is running...")
-    app.run_polling()
+    bot.run_polling()
+
+
+if __name__ == "__main__":
+    threading.Thread(target=bot_pull).start()
+    app.run(host='0.0.0.0',
+            port=5000)
+
