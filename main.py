@@ -1,17 +1,12 @@
-import os
 import random
-import threading
-
-import requests
-from flask import Flask, request
 from facts import FACTS, SYMBOLS
 from on_this_day import extract_events_and_births, get_events
-from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, Application
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import CommandHandler, MessageHandler, filters, ContextTypes, Application
 
-app = Flask(__name__)
+# Your Telegram Bot Token
+BOT_TOKEN = token = "7608536516:AAFX2aQh18Qj9W1q8bUyCwa3I687qLQX5Qs"
 # token = os.environ["TELEGRAM_TOKEN"]
-token = "7608536516:AAFX2aQh18Qj9W1q8bUyCwa3I687qLQX5Qs"
 
 # Start command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -45,14 +40,10 @@ async def send_fact(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(f"{SYMBOLS[user_choice]} {fact}")
 
 
-def main():
-    application = Application.builder().token(token).build()
-    print('BotIsUp')
-    application.add_handler(CommandHandler('start', start))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_fact))
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
-
-
 if __name__ == '__main__':
-    print('main!')
-    main()
+    print('Bot is live')
+    app = Application.builder().token(token).build()
+    app.add_handler(CommandHandler('start', start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_fact))
+    app.run_polling(allowed_updates=Update.ALL_TYPES, poll_interval=3)
+
