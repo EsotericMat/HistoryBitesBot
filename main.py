@@ -1,12 +1,13 @@
 import random
+import os
 from facts import FACTS, SYMBOLS
 from on_this_day import extract_events_and_births, get_events
 from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import CommandHandler, MessageHandler, filters, ContextTypes, Application
+from telegram.ext import CommandHandler, MessageHandler, filters, ContextTypes, Application, Updater
 
 # Your Telegram Bot Token
-BOT_TOKEN = token = "7608536516:AAFX2aQh18Qj9W1q8bUyCwa3I687qLQX5Qs"
-# token = os.environ["TELEGRAM_TOKEN"]
+# BOT_TOKEN = token = "7608536516:AAFX2aQh18Qj9W1q8bUyCwa3I687qLQX5Qs"
+token = os.environ["TELEGRAM_TOKEN"]
 
 # Start command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -45,5 +46,6 @@ if __name__ == '__main__':
     app = Application.builder().token(token).build()
     app.add_handler(CommandHandler('start', start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_fact))
-    app.run_polling(allowed_updates=Update.ALL_TYPES, poll_interval=3)
+    # dispatcher.run_polling(allowed_updates=Update.ALL_TYPES, poll_interval=3)
+    app.run_polling(poll_interval=3)
 
